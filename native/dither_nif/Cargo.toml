@@ -10,3 +10,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.36.2"
+image = "0.25.6"
+dither-lib = { git = "https://gitlab.com/efronlicht/dither.git" }

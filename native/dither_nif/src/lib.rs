@@ -116,6 +116,14 @@ fn resize(img: ImageArc, width: u32, height: u32) -> Result<ImageArc, Atom> {
 }
 
 #[rustler::nif]
+fn grayscale(img: ImageArc) -> Result<ImageArc, Atom> {
+    let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
+    Ok(ImageArc::new(ImageResource {
+        inner: Mutex::new(DynamicImage::ImageLuma8(img_lock.to_luma8())),
+    }))
+}
+
+#[rustler::nif]
 fn dimensions(img: ImageArc) -> Result<(u32, u32), Atom> {
     let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
     Ok(img_lock.dimensions())

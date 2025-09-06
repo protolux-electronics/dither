@@ -108,6 +108,17 @@ defmodule Dither do
     end
   end
 
+  def grayscale(image) when is_reference(image) do
+    NIF.grayscale(image)
+  end
+
+  def grayscale!(image) when is_reference(image) do
+    case grayscale(image) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "grayscale error: #{inspect(reason)}"
+    end
+  end
+
   def dither(image, opts \\ []) when is_reference(image) do
     algorithm = Keyword.get(opts, :algorithm, :sierra)
     bit_depth = Keyword.get(opts, :bit_depth, 1)

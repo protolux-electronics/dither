@@ -11,6 +11,7 @@ defmodule Dither.NIF do
   def from_raw(_binary, _width, _height), do: :erlang.nif_error(:nif_not_loaded)
   def to_raw(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def resize(_resource, _new_width, _new_height), do: :erlang.nif_error(:nif_not_loaded)
+  def grayscale(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def dither(_resource, _mode, _algorithm, _bit_depth), do: :erlang.nif_error(:nif_not_loaded)
   def dimensions(_resource), do: :erlang.nif_error(:nif_not_loaded)
 end

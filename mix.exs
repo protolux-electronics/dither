@@ -1,6 +1,9 @@
 defmodule Dither.MixProject do
   use Mix.Project
 
+  @source_url "https://github.com/protolux-electronics/dither"
+  @version "0.1.0"
+
   @nerves_rust_target_triple_mapping %{
     "armv6-nerves-linux-gnueabihf": "arm-unknown-linux-gnueabihf",
     "armv7-nerves-linux-gnueabihf": "armv7-unknown-linux-gnueabihf",
@@ -30,10 +33,11 @@ defmodule Dither.MixProject do
 
     [
       app: :dither,
-      version: "0.1.0",
-      elixir: "~> 1.18",
+      version: @version,
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      package: package()
     ]
   end
 
@@ -47,7 +51,27 @@ defmodule Dither.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "~> 0.36.2"}
+      {:rustler, "~> 0.36.2"},
+      {:rustler_precompiled, "~> 0.8"}
+    ]
+  end
+
+  defp package do
+    [
+      files: [
+        "lib",
+        "native",
+        "mix.exs",
+        "CHANGELOG.md",
+        "README.md",
+        "LICENSE"
+      ],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => @source_url,
+        "Changelog" => "#{@source_url}/blob/v#{@version}/CHANGELOG.md"
+      },
+      maintainers: ["Gus Workman"]
     ]
   end
 end

@@ -119,6 +119,19 @@ defmodule Dither do
     end
   end
 
+  def flip(image, direction)
+      when is_reference(image) and direction in [:horizontal, :vertical, :both] do
+    NIF.flip(image, direction)
+  end
+
+  def flip!(image, direction)
+      when is_reference(image) and direction in [:horizontal, :vertical, :both] do
+    case flip(image, direction) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "flip error: #{inspect(reason)}"
+    end
+  end
+
   def dither(image, opts \\ []) when is_reference(image) do
     algorithm = Keyword.get(opts, :algorithm, :sierra)
     bit_depth = Keyword.get(opts, :bit_depth, 1)

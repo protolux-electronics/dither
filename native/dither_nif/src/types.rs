@@ -1,5 +1,5 @@
 use image::DynamicImage;
-use rustler::{Resource, ResourceArc};
+use rustler::{types::atom::nil, Resource, ResourceArc};
 use std::sync::Mutex;
 
 rustler::atoms! {
@@ -13,6 +13,11 @@ rustler::atoms! {
 
     // dither types
     bw,
+
+    // flip directions
+    horizontal,
+    vertical,
+    both,
 
     // errors
     invalid_buffer
@@ -62,6 +67,27 @@ impl<'a> rustler::Decoder<'a> for DitherType {
         let atom: rustler::Atom = term.decode()?;
         match atom {
             x if x == bw() => Ok(DitherType::BlackAndWhite),
+            _ => Err(rustler::Error::BadArg),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum FlipDirection {
+    None,
+    Horizontal,
+    Vertical,
+    Both,
+}
+
+impl<'a> rustler::Decoder<'a> for FlipDirection {
+    fn decode(term: rustler::Term<'a>) -> rustler::NifResult<Self> {
+        let atom: rustler::Atom = term.decode()?;
+        match atom {
+            x if x == nil() => Ok(FlipDirection::None),
+            x if x == horizontal() => Ok(FlipDirection::Horizontal),
+            x if x == vertical() => Ok(FlipDirection::Vertical),
+            x if x == both() => Ok(FlipDirection::Both),
             _ => Err(rustler::Error::BadArg),
         }
     }

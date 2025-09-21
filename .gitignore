@@ -25,3 +25,5 @@ dither-*.tar
 # Rust binary artifacts
 /target/
 
+# checksum files (only for hex release)
+checksum-*.exs

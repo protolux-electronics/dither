@@ -37,7 +37,9 @@ defmodule Dither.MixProject do
       elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      package: package()
+      package: package(),
+      description: description(),
+      source_url: @source_url
     ]
   end
 
@@ -56,11 +58,16 @@ defmodule Dither.MixProject do
     ]
   end
 
+  defp description do
+    "A rustler NIF for basic image processing and dithering"
+  end
+
   defp package do
     [
       files: [
         "lib",
         "native",
+        "checksum-*.exs",
         "mix.exs",
         "CHANGELOG.md",
         "README.md",

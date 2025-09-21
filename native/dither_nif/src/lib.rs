@@ -8,7 +8,7 @@ use image::{
     imageops::FilterType, DynamicImage, GenericImageView, GrayImage, ImageError, RgbImage,
 };
 use rustler::{Atom, Binary, Env, NewBinary, Term};
-use types::{invalid_buffer, DitherAlgorithm, DitherType, ImageArc, ImageResource};
+use types::{invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageResource};
 
 mod dither;
 mod types;
@@ -120,6 +120,22 @@ fn grayscale(img: ImageArc) -> Result<ImageArc, Atom> {
     let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
     Ok(ImageArc::new(ImageResource {
         inner: Mutex::new(DynamicImage::ImageLuma8(img_lock.to_luma8())),
+    }))
+}
+
+#[rustler::nif]
+fn flip(img: ImageArc, direction: FlipDirection) -> Result<ImageArc, Atom> {
+    let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
+
+    let img_flipped = match direction {
+        FlipDirection::None => img_lock.clone(),
+        FlipDirection::Horizontal => img_lock.clone().fliph(),
+        FlipDirection::Vertical => img_lock.clone().flipv(),
+        FlipDirection::Both => img_lock.clone().flipv().fliph(),
+    };
+
+    Ok(ImageArc::new(ImageResource {
+        inner: Mutex::new(img_flipped),
     }))
 }
 

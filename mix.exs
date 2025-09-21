@@ -39,7 +39,10 @@ defmodule Dither.MixProject do
       deps: deps(),
       package: package(),
       description: description(),
-      source_url: @source_url
+
+      # Docs
+      source_url: @source_url,
+      docs: docs()
     ]
   end
 
@@ -54,12 +57,21 @@ defmodule Dither.MixProject do
   defp deps do
     [
       {:rustler, "~> 0.36.2", optional: true},
-      {:rustler_precompiled, "~> 0.8"}
+      {:rustler_precompiled, "~> 0.8"},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
     ]
   end
 
   defp description do
     "A rustler NIF for basic image processing and dithering"
+  end
+
+  defp docs do
+    [
+      # The main page in the docs
+      main: "Dither",
+      extras: ["README.md", "LICENSE"]
+    ]
   end
 
   defp package do

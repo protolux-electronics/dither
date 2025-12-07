@@ -73,16 +73,16 @@ fn encode<'a>(env: Env<'a>, img: ImageArc) -> Result<Term<'a>, Atom> {
 }
 
 #[rustler::nif]
-fn from_raw(bytes: Vec<u8>, width: u32, height: u32) -> Result<ImageArc, Atom> {
+fn from_raw<'a>(bytes: Binary<'a>, width: u32, height: u32) -> Result<ImageArc, Atom> {
     let img: DynamicImage;
 
     if bytes.len() == (width * height) as usize {
         img = DynamicImage::ImageLuma8(
-            GrayImage::from_raw(width, height, bytes).ok_or(invalid_buffer())?,
+            GrayImage::from_raw(width, height, bytes.as_slice().into()).ok_or(invalid_buffer())?,
         );
     } else if bytes.len() == (3 * width * height) as usize {
         img = DynamicImage::ImageRgb8(
-            RgbImage::from_raw(width, height, bytes).ok_or(invalid_buffer())?,
+            RgbImage::from_raw(width, height, bytes.as_slice().into()).ok_or(invalid_buffer())?,
         );
     } else {
         return Err(invalid_buffer());

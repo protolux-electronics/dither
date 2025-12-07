@@ -2,7 +2,7 @@ defmodule Dither.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/protolux-electronics/dither"
-  @version "0.1.0"
+  @version "0.1.1"
 
   @nerves_rust_target_triple_mapping %{
     "armv6-nerves-linux-gnueabihf": "arm-unknown-linux-gnueabihf",

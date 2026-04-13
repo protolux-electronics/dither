@@ -23,7 +23,9 @@ dither-*.tar
 /tmp/
 
 # Rust binary artifacts
-/target/
+native/dither_nif/target/
 
 # checksum files (only for hex release)
 checksum-*.exs
+
+priv/native/

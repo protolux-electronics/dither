@@ -45,4 +45,5 @@ defmodule Dither.NIF do
   def flip(_resource, _direction), do: :erlang.nif_error(:nif_not_loaded)
   def dither(_resource, _mode, _algorithm, _bit_depth), do: :erlang.nif_error(:nif_not_loaded)
   def dimensions(_resource), do: :erlang.nif_error(:nif_not_loaded)
+  def channels(_resource), do: :erlang.nif_error(:nif_not_loaded)
 end

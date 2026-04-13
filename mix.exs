@@ -68,8 +68,8 @@ defmodule Dither.MixProject do
 
   defp docs do
     [
-      # The main page in the docs
-      main: "Dither",
+      main: "readme",
+      assets: %{"assets" => "assets"},
       extras: ["README.md", "LICENSE"]
     ]
   end
@@ -79,6 +79,7 @@ defmodule Dither.MixProject do
       files: [
         "lib",
         "native",
+        "assets",
         "checksum-*.exs",
         "mix.exs",
         "CHANGELOG.md",

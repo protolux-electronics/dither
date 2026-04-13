@@ -43,7 +43,7 @@ Add `dither` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:dither, "~> 0.2.0"}
+    {:dither, "~> 0.2.1"}
   ]
 end
 ```
@@ -102,8 +102,8 @@ image
 
 The `dither/2` function supports the following options:
 
-- `:algorithm`: The dithering algorithm to use (default: `:sierra`).
-- `:bit_depth`: The target color depth (default: `1` for black and white).
+- `:algorithm`: The dithering algorithm to use (default: `:sierra`)
+- `:bit_depth`: The target color depth (default: `1` for black and white)
 - `:palette`: A list of colors to dither to. If provided, `:bit_depth` is
   ignored. Supported values:
   - List of RGB tuples: `[{255, 0, 0}, ...]`
@@ -113,8 +113,6 @@ The `dither/2` function supports the following options:
     `:yellow`, `:cyan`, `:magenta`
 
 #### Supported Algorithms
-
-...
 
 - `:floyd_steinberg`
 - `:atkinson`
@@ -127,9 +125,9 @@ The `dither/2` function supports the following options:
 
 The `:bit_depth` option controls the quantization level. For example:
 
-- `bit_depth: 1` (default): 2 colors (Black & White).
-- `bit_depth: 2`: 4 colors ($2^2$).
-- `bit_depth: 4`: 16 colors ($2^4$).
+- `bit_depth: 1` (default): 2 colors
+- `bit_depth: 2`: 4 colors
+- `bit_depth: 4`: 16 colors
 
 ## The Dither Struct
 

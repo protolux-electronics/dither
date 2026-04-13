@@ -18,7 +18,7 @@ high-quality dithering algorithms.
 ## Showcase
 
 Below are examples of `Dither` in action, generated from a single 1200x1200px
-source image.
+source image of my cat.
 
 ### Original Image (Resized)
 
@@ -26,14 +26,14 @@ source image.
 
 ### Grayscale Dithering
 
-|                   Jarvis (1-bit)                      |                   Stucki (4-bit)                   |
-| :---------------------------------------------------: | :------------------------------------------------: |
+|                  Jarvis (1-bit)                   |                  Stucki (4-bit)                   |
+| :-----------------------------------------------: | :-----------------------------------------------: |
 | ![Jarvis 1-bit](assets/grayscale_jarvis_1bit.png) | ![Stucki 4-bit](assets/grayscale_stucki_4bit.png) |
 
 ### Color Dithering (Custom Palettes)
 
-|            CGA Palette (Atkinson)           |              Websafe Palette (Sierra)               |               Crayon Palette (Floyd)                |
-| :-----------------------------------------: | :-------------------------------------------------: | :-------------------------------------------------: |
+|            CGA Palette (Atkinson)             |              Websafe Palette (Sierra)               |         Crayon Palette (Floyd-Steinberg)         |
+| :-------------------------------------------: | :-------------------------------------------------: | :----------------------------------------------: |
 | ![CGA Palette](assets/color_cga_atkinson.png) | ![Websafe Palette](assets/color_websafe_sierra.png) | ![Crayon Palette](assets/color_crayon_floyd.png) |
 
 ## Installation

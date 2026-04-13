@@ -62,31 +62,56 @@ defmodule Dither.Palette do
   """
   def crayon do
     [
-      "#FCE883", # Yellow
-      "#1F75FE", # Blue
-      "#232323", # Black
-      "#926EAE", # Violet (Purple)
-      "#199EBD", # Blue Green
-      "#C0448F", # Red Violet
-      "#FF5349", # Red Orange
-      "#C5E384", # Yellow Green
-      "#EE204D", # Red
-      "#FF7538", # Orange
-      "#FDDB6D", # Dandelion
-      "#1DACD6", # Cerulean
-      "#EDEDED", # White
-      "#F75394", # Violet Red
-      "#95918C", # Gray
-      "#5D76CB", # Indigo
-      "#FDD9B5", # Apricot
-      "#FFAACC", # Carnation Pink
-      "#FC2847", # Scarlet
-      "#1CAC78", # Green
-      "#7366BD", # Blue Violet
-      "#B4674D", # Brown
-      "#F0E891", # Green Yellow
-      "#000000", # True Black
-      "#FFFFFF"  # True White
+      # Yellow
+      "#FCE883",
+      # Blue
+      "#1F75FE",
+      # Black
+      "#232323",
+      # Violet (Purple)
+      "#926EAE",
+      # Blue Green
+      "#199EBD",
+      # Red Violet
+      "#C0448F",
+      # Red Orange
+      "#FF5349",
+      # Yellow Green
+      "#C5E384",
+      # Red
+      "#EE204D",
+      # Orange
+      "#FF7538",
+      # Dandelion
+      "#FDDB6D",
+      # Cerulean
+      "#1DACD6",
+      # White
+      "#EDEDED",
+      # Violet Red
+      "#F75394",
+      # Gray
+      "#95918C",
+      # Indigo
+      "#5D76CB",
+      # Apricot
+      "#FDD9B5",
+      # Carnation Pink
+      "#FFAACC",
+      # Scarlet
+      "#FC2847",
+      # Green
+      "#1CAC78",
+      # Blue Violet
+      "#7366BD",
+      # Brown
+      "#B4674D",
+      # Green Yellow
+      "#F0E891",
+      # True Black
+      "#000000",
+      # True White
+      "#FFFFFF"
     ]
     |> normalize()
   end

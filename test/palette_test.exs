@@ -19,11 +19,11 @@ defmodule Dither.PaletteTest do
     assert length(cga) == 16
     assert Enum.at(cga, 0) == {0, 0, 0}
 
-    gb = Palette.normalize(:gameboy)
-    assert length(gb) == 4
-
     websafe = Palette.normalize(:websafe)
     assert length(websafe) == 216
+
+    crayon = Palette.normalize(:crayon)
+    assert length(crayon) == 25
   end
 
   test "normalize raises on unknown atoms" do

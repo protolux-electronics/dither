@@ -26,15 +26,15 @@ source image.
 
 ### Grayscale Dithering
 
-|                   Atkinson (1-bit)                    |                  Floyd-Steinberg (4-bit)                  |
-| :---------------------------------------------------: | :-------------------------------------------------------: |
-| ![Atkinson 1-bit](assets/grayscale_atkinson_1bit.png) | ![Floyd-Steinberg 4-bit](assets/grayscale_floyd_4bit.png) |
+|                   Jarvis (1-bit)                      |                   Stucki (4-bit)                   |
+| :---------------------------------------------------: | :------------------------------------------------: |
+| ![Jarvis 1-bit](assets/grayscale_jarvis_1bit.png) | ![Stucki 4-bit](assets/grayscale_stucki_4bit.png) |
 
 ### Color Dithering (Custom Palettes)
 
-|            CGA Palette (Sierra)             |              Game Boy Palette (Stucki)               |              Websafe Palette (Burkes)               |
-| :-----------------------------------------: | :--------------------------------------------------: | :-------------------------------------------------: |
-| ![CGA Palette](assets/color_cga_sierra.png) | ![Game Boy Palette](assets/color_gameboy_stucki.png) | ![Websafe Palette](assets/color_websafe_burkes.png) |
+|            CGA Palette (Atkinson)           |              Websafe Palette (Sierra)               |               Crayon Palette (Floyd)                |
+| :-----------------------------------------: | :-------------------------------------------------: | :-------------------------------------------------: |
+| ![CGA Palette](assets/color_cga_atkinson.png) | ![Websafe Palette](assets/color_websafe_sierra.png) | ![Crayon Palette](assets/color_crayon_floyd.png) |
 
 ## Installation
 
@@ -108,7 +108,7 @@ The `dither/2` function supports the following options:
   ignored. Supported values:
   - List of RGB tuples: `[{255, 0, 0}, ...]`
   - List of Hex strings: `["#FF0000", ...]`
-  - Predefined atoms: `:cga`, `:gameboy`, `:websafe`
+  - Predefined atoms: `:cga`, `:websafe`, `:crayon`
   - Simple color atoms: `:black`, `:white`, `:red`, `:green`, `:blue`,
     `:yellow`, `:cyan`, `:magenta`
 

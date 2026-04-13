@@ -12,7 +12,7 @@ defmodule Dither.Palette do
   Supported input formats:
   - List of RGB tuples: `[{255, 255, 255}, {0, 0, 0}]`
   - List of Hex strings: `["#FFFFFF", "#000000"]` (with or without `#`)
-  - Predefined palette atoms: `:cga`, `:gameboy`, `:websafe`
+  - Predefined palette atoms: `:cga`, `:websafe`
   """
   @spec normalize(color() | [color()]) :: [rgb()]
   def normalize(palette) when is_list(palette) do
@@ -20,8 +20,8 @@ defmodule Dither.Palette do
   end
 
   def normalize(:cga), do: cga()
-  def normalize(:gameboy), do: gameboy()
   def normalize(:websafe), do: websafe()
+  def normalize(:crayon), do: crayon()
 
   @doc """
   The 16-color CGA palette.
@@ -48,18 +48,6 @@ defmodule Dither.Palette do
   end
 
   @doc """
-  The 4-color Game Boy palette (greens).
-  """
-  def gameboy do
-    [
-      {15, 56, 15},
-      {48, 98, 48},
-      {139, 172, 15},
-      {155, 188, 15}
-    ]
-  end
-
-  @doc """
   The 216-color Web Safe palette.
   """
   def websafe do
@@ -67,6 +55,40 @@ defmodule Dither.Palette do
         g <- [0x00, 0x33, 0x66, 0x99, 0xCC, 0xFF],
         b <- [0x00, 0x33, 0x66, 0x99, 0xCC, 0xFF],
         do: {r, g, b}
+  end
+
+  @doc """
+  A crayon-like palette with 25 colors, mostly based on a 24-pack of Crayola crayons.
+  """
+  def crayon do
+    [
+      "#FCE883", # Yellow
+      "#1F75FE", # Blue
+      "#232323", # Black
+      "#926EAE", # Violet (Purple)
+      "#199EBD", # Blue Green
+      "#C0448F", # Red Violet
+      "#FF5349", # Red Orange
+      "#C5E384", # Yellow Green
+      "#EE204D", # Red
+      "#FF7538", # Orange
+      "#FDDB6D", # Dandelion
+      "#1DACD6", # Cerulean
+      "#EDEDED", # White
+      "#F75394", # Violet Red
+      "#95918C", # Gray
+      "#5D76CB", # Indigo
+      "#FDD9B5", # Apricot
+      "#FFAACC", # Carnation Pink
+      "#FC2847", # Scarlet
+      "#1CAC78", # Green
+      "#7366BD", # Blue Violet
+      "#B4674D", # Brown
+      "#F0E891", # Green Yellow
+      "#000000", # True Black
+      "#FFFFFF"  # True White
+    ]
+    |> normalize()
   end
 
   defp normalize_color({r, g, b}) when r in 0..255 and g in 0..255 and b in 0..255, do: {r, g, b}

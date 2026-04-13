@@ -60,15 +60,24 @@ impl<'a> rustler::Decoder<'a> for DitherAlgorithm {
 #[derive(Debug)]
 pub enum DitherType {
     BlackAndWhite,
+    Color(Vec<(u8, u8, u8)>),
 }
 
 impl<'a> rustler::Decoder<'a> for DitherType {
     fn decode(term: rustler::Term<'a>) -> rustler::NifResult<Self> {
-        let atom: rustler::Atom = term.decode()?;
-        match atom {
-            x if x == bw() => Ok(DitherType::BlackAndWhite),
-            _ => Err(rustler::Error::BadArg),
+        if let Ok(atom) = term.decode::<rustler::Atom>() {
+            if atom == bw() {
+                return Ok(DitherType::BlackAndWhite);
+            }
         }
+
+        if let Ok((tag, palette)) = term.decode::<(rustler::Atom, Vec<(u8, u8, u8)>)>() {
+            if tag == crate::color() {
+                return Ok(DitherType::Color(palette));
+            }
+        }
+
+        Err(rustler::Error::BadArg)
     }
 }
 

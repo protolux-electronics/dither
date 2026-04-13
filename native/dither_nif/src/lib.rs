@@ -3,7 +3,7 @@ use std::{
     sync::{Mutex, PoisonError},
 };
 
-use dither::dither_grayscale;
+use crate::dither::{dither_color, dither_grayscale};
 use image::{
     imageops::FilterType, ColorType, DynamicImage, GenericImageView, GrayImage, ImageError,
     RgbImage,
@@ -24,7 +24,10 @@ rustler::atoms! {
 
     // success/failure
     success,
-    failed_to_acquire_mutex
+    failed_to_acquire_mutex,
+
+    // dithering modes
+    color
 }
 
 #[rustler::nif]
@@ -173,6 +176,9 @@ fn dither(
     match dither_type {
         DitherType::BlackAndWhite => {
             img_dithered = dither_grayscale(&img_lock, algorithm, depth);
+        }
+        DitherType::Color(palette) => {
+            img_dithered = dither_color(&img_lock, algorithm, palette);
         }
     }
 

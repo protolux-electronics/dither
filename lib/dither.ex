@@ -12,10 +12,15 @@ defmodule Dither do
         }
 
   @type dither_algorithm :: :floyd_steinberg | :atkinson | :stucki | :burkes | :jarvis | :sierra
-  @type dither_opts :: [algorithm: dither_algorithm(), bit_depth: pos_integer()]
+  @type dither_opts :: [
+          algorithm: dither_algorithm(),
+          bit_depth: pos_integer(),
+          palette: Dither.Palette.color() | [Dither.Palette.color()]
+        ]
   @type flip_direction :: :horizontal | :vertical | :both
 
   alias Dither.NIF
+  alias Dither.Palette
 
   @doc """
   Loads an image from the given file path.
@@ -246,6 +251,11 @@ defmodule Dither do
       * `:jarvis`
       * `:sierra` (default)
     * `:bit_depth` - The bit depth for the resulting image (default: `1`).
+    * `:palette` - A custom color palette. If provided, `bit_depth` is ignored and the image is dithered to these colors.
+      Accepted formats:
+      * List of RGB tuples: `[{255, 0, 0}, ...]`
+      * List of hex strings: `["#FF0000", ...]`
+      * Predefined palette atoms: `:cga`, `:gameboy`, `:websafe`
 
   """
   @spec dither(t(), dither_opts()) :: {:ok, t()} | {:error, atom()}
@@ -253,9 +263,20 @@ defmodule Dither do
     algorithm = Keyword.get(opts, :algorithm, :sierra)
     bit_depth = Keyword.get(opts, :bit_depth, 1)
 
-    case NIF.dither(ref, :bw, algorithm, bit_depth) do
-      {:ok, new_ref} -> {:ok, from_ref(new_ref)}
-      {:error, reason} -> {:error, reason}
+    case Keyword.get(opts, :palette) do
+      nil ->
+        case NIF.dither(ref, :bw, algorithm, bit_depth) do
+          {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+          {:error, reason} -> {:error, reason}
+        end
+
+      palette_input ->
+        palette = Palette.normalize(palette_input)
+
+        case NIF.dither(ref, {:color, palette}, algorithm, bit_depth) do
+          {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+          {:error, reason} -> {:error, reason}
+        end
     end
   end
 

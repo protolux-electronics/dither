@@ -134,6 +134,34 @@ defmodule DitherTest do
     end
   end
 
+  test "dither/2 with custom palette (color dithering)" do
+    # 2x2 RGB image: 12 bytes
+    data = <<
+      255, 0, 0, 0, 255, 0,
+      0, 0, 255, 255, 255, 255
+    >>
+
+    width = 2
+    height = 2
+    {:ok, rgb_image} = Dither.from_raw(data, width, height)
+    assert rgb_image.channels == 3
+
+    # Dither to just Red and Black
+    palette = ["#FF0000", "#000000"]
+
+    assert {:ok, %Dither{} = dithered} = Dither.dither(rgb_image, palette: palette)
+    assert dithered.size == {width, height}
+    assert dithered.channels == 3
+
+    # Check some raw bytes to see if it's restricted to our palette
+    raw = Dither.to_raw!(dithered)
+
+    # Every 3 bytes should be either [255, 0, 0] or [0, 0, 0]
+    for <<r, g, b <- raw>> do
+      assert {r, g, b} in [{255, 0, 0}, {0, 0, 0}]
+    end
+  end
+
   test "load error when file not found" do
     assert {:error, :file_not_found} = Dither.load("non_existent_file.png")
   end

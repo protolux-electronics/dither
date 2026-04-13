@@ -15,6 +15,27 @@ high-quality dithering algorithms.
 - **Native Efficiency**: Heavy lifting is performed in Rust, while providing a
   clean, idiomatic Elixir interface.
 
+## Showcase
+
+Below are examples of `Dither` in action, generated from a single 1200x1200px
+source image.
+
+### Original Image (Resized)
+
+![Original Resized](assets/original_resized.png)
+
+### Grayscale Dithering
+
+|                   Atkinson (1-bit)                    |                  Floyd-Steinberg (4-bit)                  |
+| :---------------------------------------------------: | :-------------------------------------------------------: |
+| ![Atkinson 1-bit](assets/grayscale_atkinson_1bit.png) | ![Floyd-Steinberg 4-bit](assets/grayscale_floyd_4bit.png) |
+
+### Color Dithering (Custom Palettes)
+
+|            CGA Palette (Sierra)             |              Game Boy Palette (Stucki)               |              Websafe Palette (Burkes)               |
+| :-----------------------------------------: | :--------------------------------------------------: | :-------------------------------------------------: |
+| ![CGA Palette](assets/color_cga_sierra.png) | ![Game Boy Palette](assets/color_gameboy_stucki.png) | ![Websafe Palette](assets/color_websafe_burkes.png) |
+
 ## Installation
 
 Add `dither` to your list of dependencies in `mix.exs`:
@@ -61,14 +82,39 @@ image
 |> Dither.save!("output.png")
 ```
 
+### Color Dithering with Custom Palettes
+
+```elixir
+image = Dither.load!("photo.jpg")
+
+# Dither to the 16-color CGA palette
+image
+|> Dither.dither!(palette: :cga)
+|> Dither.save!("retro_photo.png")
+
+# Dither to a custom hex-based palette
+image
+|> Dither.dither!(palette: ["#000000", "#FF0000", "#00FF00", "#0000FF"])
+|> Dither.save!("custom_colors.png")
+```
+
 ### Dithering Options
 
 The `dither/2` function supports the following options:
 
 - `:algorithm`: The dithering algorithm to use (default: `:sierra`).
 - `:bit_depth`: The target color depth (default: `1` for black and white).
+- `:palette`: A list of colors to dither to. If provided, `:bit_depth` is
+  ignored. Supported values:
+  - List of RGB tuples: `[{255, 0, 0}, ...]`
+  - List of Hex strings: `["#FF0000", ...]`
+  - Predefined atoms: `:cga`, `:gameboy`, `:websafe`
+  - Simple color atoms: `:black`, `:white`, `:red`, `:green`, `:blue`,
+    `:yellow`, `:cyan`, `:magenta`
 
 #### Supported Algorithms
+
+...
 
 - `:floyd_steinberg`
 - `:atkinson`

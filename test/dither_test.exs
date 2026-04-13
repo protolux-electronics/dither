@@ -137,8 +137,18 @@ defmodule DitherTest do
   test "dither/2 with custom palette (color dithering)" do
     # 2x2 RGB image: 12 bytes
     data = <<
-      255, 0, 0, 0, 255, 0,
-      0, 0, 255, 255, 255, 255
+      255,
+      0,
+      0,
+      0,
+      255,
+      0,
+      0,
+      0,
+      255,
+      255,
+      255,
+      255
     >>
 
     width = 2

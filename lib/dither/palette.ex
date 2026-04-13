@@ -28,10 +28,22 @@ defmodule Dither.Palette do
   """
   def cga do
     [
-      {0, 0, 0}, {0, 0, 170}, {0, 170, 0}, {0, 170, 170},
-      {170, 0, 0}, {170, 0, 170}, {170, 85, 0}, {170, 170, 170},
-      {85, 85, 85}, {85, 85, 255}, {85, 255, 85}, {85, 255, 255},
-      {255, 85, 85}, {255, 85, 255}, {255, 255, 85}, {255, 255, 255}
+      {0, 0, 0},
+      {0, 0, 170},
+      {0, 170, 0},
+      {0, 170, 170},
+      {170, 0, 0},
+      {170, 0, 170},
+      {170, 85, 0},
+      {170, 170, 170},
+      {85, 85, 85},
+      {85, 85, 255},
+      {85, 255, 85},
+      {85, 255, 255},
+      {255, 85, 85},
+      {255, 85, 255},
+      {255, 255, 85},
+      {255, 255, 255}
     ]
   end
 
@@ -60,6 +72,7 @@ defmodule Dither.Palette do
   defp normalize_color({r, g, b}) when r in 0..255 and g in 0..255 and b in 0..255, do: {r, g, b}
 
   defp normalize_color("#" <> hex), do: normalize_color(hex)
+
   defp normalize_color(hex) when is_binary(hex) and byte_size(hex) == 6 do
     <<r::8, g::8, b::8>> = Base.decode16!(hex, case: :mixed)
     {r, g, b}

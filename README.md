@@ -10,7 +10,7 @@ high-quality dithering algorithms.
 
 - **Format Support**: Load/save and encode/decode common image formats (PNG,
   JPEG, etc.).
-- **Transformations**: Resize, flip, and grayscale conversion.
+- **Transformations**: Resize, rotate, flip, and grayscale conversion.
 - **Dithering**: Support for 6 high-quality dithering algorithms.
 - **Native Efficiency**: Heavy lifting is performed in Rust, while providing a
   clean, idiomatic Elixir interface.

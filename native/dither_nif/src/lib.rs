@@ -9,7 +9,10 @@ use image::{
     RgbImage, RgbaImage,
 };
 use rustler::{Atom, Binary, Env, NewBinary, Term};
-use types::{invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageResource};
+use types::{
+    invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageResource,
+    RotateDegrees,
+};
 
 mod dither;
 mod types;
@@ -139,6 +142,21 @@ fn to_rgb(img: ImageArc) -> Result<ImageArc, Atom> {
     let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
     Ok(ImageArc::new(ImageResource {
         inner: Mutex::new(DynamicImage::ImageRgb8(img_lock.to_rgb8())),
+    }))
+}
+
+#[rustler::nif]
+fn rotate(img: ImageArc, degrees: RotateDegrees) -> Result<ImageArc, Atom> {
+    let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
+
+    let img_rotated = match degrees {
+        RotateDegrees::D90 => img_lock.rotate90(),
+        RotateDegrees::D180 => img_lock.rotate180(),
+        RotateDegrees::D270 => img_lock.rotate270(),
+    };
+
+    Ok(ImageArc::new(ImageResource {
+        inner: Mutex::new(img_rotated),
     }))
 }
 

@@ -87,6 +87,22 @@ defmodule DitherTest do
     assert %Dither{} = Dither.flip!(image, :both)
   end
 
+  test "rotate and rotate!", %{image: image} do
+    {w, h} = image.size
+
+    # 90 degrees
+    assert {:ok, %Dither{} = r90} = Dither.rotate(image, 90)
+    assert r90.size == {h, w}
+
+    # 180 degrees
+    assert {:ok, %Dither{} = r180} = Dither.rotate(image, 180)
+    assert r180.size == {w, h}
+
+    # 270 degrees
+    assert %Dither{} = r270 = Dither.rotate!(image, 270)
+    assert r270.size == {h, w}
+  end
+
   test "dither and dither!", %{image: image} do
     assert {:ok, %Dither{} = dithered} = Dither.dither(image)
     assert dithered.size == image.size

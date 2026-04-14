@@ -101,3 +101,22 @@ impl<'a> rustler::Decoder<'a> for FlipDirection {
         }
     }
 }
+
+#[derive(Debug)]
+pub enum RotateDegrees {
+    D90,
+    D180,
+    D270,
+}
+
+impl<'a> rustler::Decoder<'a> for RotateDegrees {
+    fn decode(term: rustler::Term<'a>) -> rustler::NifResult<Self> {
+        let degrees: u32 = term.decode()?;
+        match degrees {
+            90 => Ok(RotateDegrees::D90),
+            180 => Ok(RotateDegrees::D180),
+            270 => Ok(RotateDegrees::D270),
+            _ => Err(rustler::Error::BadArg),
+        }
+    }
+}

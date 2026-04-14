@@ -18,6 +18,7 @@ defmodule Dither do
           palette: Dither.Palette.color() | [Dither.Palette.color()]
         ]
   @type flip_direction :: :horizontal | :vertical | :both
+  @type rotation_degrees :: 90 | 180 | 270
 
   alias Dither.NIF
   alias Dither.Palette
@@ -257,6 +258,28 @@ defmodule Dither do
     case flip(image, direction) do
       {:ok, image} -> image
       {:error, reason} -> raise "flip error: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
+  Rotates the image clockwise by the specified degrees (90, 180, or 270).
+  """
+  @spec rotate(t(), rotation_degrees()) :: {:ok, t()} | {:error, atom()}
+  def rotate(%__MODULE__{ref: ref}, degrees) when degrees in [90, 180, 270] do
+    case NIF.rotate(ref, degrees) do
+      {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Rotates the image clockwise by the specified degrees (90, 180, or 270), raises on error.
+  """
+  @spec rotate!(t(), rotation_degrees()) :: t()
+  def rotate!(image, degrees) when degrees in [90, 180, 270] do
+    case rotate(image, degrees) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "rotation error: #{inspect(reason)}"
     end
   end
 

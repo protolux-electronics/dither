@@ -5,6 +5,6 @@
 - Create release on GitHub.
 - Wait for GitHub Actions to finish.
 - Download checksum file:
-  `DITHER_BUILD=true mix rustler_precompiled.download Dither.NIF --ignore-unavailable --print`
+  `DITHER_BUILD=true mix rustler_precompiled.download Dither.NIF --all --ignore-unavailable --print`
 - Remove target directory: `rm -rf native/dither_nif/target/`
 - Release to Hex: `mix hex.publish`

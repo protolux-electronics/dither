@@ -5,8 +5,8 @@ use std::{
 
 use crate::dither::{dither_color, dither_grayscale};
 use image::{
-    imageops::FilterType, ColorType, DynamicImage, GenericImageView, GrayImage, ImageError,
-    RgbImage, RgbaImage,
+    imageops::FilterType, ColorType, DynamicImage, GenericImageView, GrayImage, ImageDecoder,
+    ImageError, RgbImage, RgbaImage,
 };
 use rustler::{Atom, Binary, Env, NewBinary, Term};
 use types::{
@@ -35,7 +35,13 @@ rustler::atoms! {
 
 #[rustler::nif]
 fn load(path: String) -> Result<ImageArc, Atom> {
-    let img = image::open(&path).map_err(handle_image_error)?;
+    let reader = image::ImageReader::open(&path)
+        .map_err(ImageError::IoError)
+        .map_err(handle_image_error)?;
+    let mut decoder = reader.into_decoder().map_err(handle_image_error)?;
+    let orientation = decoder.orientation().map_err(handle_image_error)?;
+    let mut img = DynamicImage::from_decoder(decoder).map_err(handle_image_error)?;
+    img.apply_orientation(orientation);
 
     match img.color() {
         ColorType::L8 | ColorType::Rgb8 | ColorType::Rgba8 => {}
@@ -58,7 +64,14 @@ fn save(img: ImageArc, path: String) -> Result<Atom, Atom> {
 
 #[rustler::nif]
 fn decode(encoded: Binary) -> Result<ImageArc, Atom> {
-    let img = image::load_from_memory(encoded.as_slice()).map_err(handle_image_error)?;
+    let reader = image::ImageReader::new(Cursor::new(encoded.as_slice()))
+        .with_guessed_format()
+        .map_err(ImageError::IoError)
+        .map_err(handle_image_error)?;
+    let mut decoder = reader.into_decoder().map_err(handle_image_error)?;
+    let orientation = decoder.orientation().map_err(handle_image_error)?;
+    let mut img = DynamicImage::from_decoder(decoder).map_err(handle_image_error)?;
+    img.apply_orientation(orientation);
 
     let img_resource = ImageResource {
         inner: Mutex::new(img),

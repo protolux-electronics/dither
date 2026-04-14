@@ -8,7 +8,7 @@ defmodule Dither do
   @type t :: %__MODULE__{
           ref: reference(),
           size: {pos_integer(), pos_integer()},
-          channels: 1 | 3
+          channels: 1 | 3 | 4
         }
 
   @type dither_algorithm :: :floyd_steinberg | :atkinson | :stucki | :burkes | :jarvis | :sierra
@@ -215,6 +215,28 @@ defmodule Dither do
   end
 
   @doc """
+  Converts the image to RGB8 (3 channels).
+  """
+  @spec to_rgb(t()) :: {:ok, t()} | {:error, atom()}
+  def to_rgb(%__MODULE__{ref: ref}) do
+    case NIF.to_rgb(ref) do
+      {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Converts the image to RGB8 (3 channels), raises on error.
+  """
+  @spec to_rgb!(t()) :: t()
+  def to_rgb!(image) do
+    case to_rgb(image) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "conversion error: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
   Flips the image in the specified direction.
   """
   @spec flip(t(), flip_direction()) :: {:ok, t()} | {:error, atom()}
@@ -259,24 +281,30 @@ defmodule Dither do
 
   """
   @spec dither(t(), dither_opts()) :: {:ok, t()} | {:error, atom()}
-  def dither(%__MODULE__{ref: ref}, opts \\ []) do
+  def dither(%__MODULE__{ref: ref, channels: channels}, opts \\ []) do
     algorithm = Keyword.get(opts, :algorithm, :sierra)
     bit_depth = Keyword.get(opts, :bit_depth, 1)
 
-    case Keyword.get(opts, :palette) do
-      nil ->
-        case NIF.dither(ref, :bw, algorithm, bit_depth) do
-          {:ok, new_ref} -> {:ok, from_ref(new_ref)}
-          {:error, reason} -> {:error, reason}
+    cond do
+      channels == 1 or channels == 3 ->
+        case Keyword.get(opts, :palette) do
+          nil ->
+            case NIF.dither(ref, :bw, algorithm, bit_depth) do
+              {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+              {:error, reason} -> {:error, reason}
+            end
+
+          palette_input ->
+            palette = Palette.normalize(palette_input)
+
+            case NIF.dither(ref, {:color, palette}, algorithm, bit_depth) do
+              {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+              {:error, reason} -> {:error, reason}
+            end
         end
 
-      palette_input ->
-        palette = Palette.normalize(palette_input)
-
-        case NIF.dither(ref, {:color, palette}, algorithm, bit_depth) do
-          {:ok, new_ref} -> {:ok, from_ref(new_ref)}
-          {:error, reason} -> {:error, reason}
-        end
+      true ->
+        {:error, :unsupported_channel_count}
     end
   end
 

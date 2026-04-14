@@ -6,7 +6,7 @@ use std::{
 use crate::dither::{dither_color, dither_grayscale};
 use image::{
     imageops::FilterType, ColorType, DynamicImage, GenericImageView, GrayImage, ImageError,
-    RgbImage,
+    RgbImage, RgbaImage,
 };
 use rustler::{Atom, Binary, Env, NewBinary, Term};
 use types::{invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageResource};
@@ -35,7 +35,7 @@ fn load(path: String) -> Result<ImageArc, Atom> {
     let img = image::open(&path).map_err(handle_image_error)?;
 
     match img.color() {
-        ColorType::L8 | ColorType::Rgb8 => {}
+        ColorType::L8 | ColorType::Rgb8 | ColorType::Rgba8 => {}
         _ => return Err(image_decode_failed()),
     }
 
@@ -91,6 +91,10 @@ fn from_raw<'a>(bytes: Binary<'a>, width: u32, height: u32) -> Result<ImageArc, 
         img = DynamicImage::ImageRgb8(
             RgbImage::from_raw(width, height, bytes.as_slice().into()).ok_or(invalid_buffer())?,
         );
+    } else if bytes.len() == (4 * width * height) as usize {
+        img = DynamicImage::ImageRgba8(
+            RgbaImage::from_raw(width, height, bytes.as_slice().into()).ok_or(invalid_buffer())?,
+        );
     } else {
         return Err(invalid_buffer());
     }
@@ -131,6 +135,14 @@ fn grayscale(img: ImageArc) -> Result<ImageArc, Atom> {
 }
 
 #[rustler::nif]
+fn to_rgb(img: ImageArc) -> Result<ImageArc, Atom> {
+    let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
+    Ok(ImageArc::new(ImageResource {
+        inner: Mutex::new(DynamicImage::ImageRgb8(img_lock.to_rgb8())),
+    }))
+}
+
+#[rustler::nif]
 fn flip(img: ImageArc, direction: FlipDirection) -> Result<ImageArc, Atom> {
     let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
 
@@ -158,6 +170,7 @@ fn channels(img: ImageArc) -> Result<u32, Atom> {
     match img_lock.color() {
         ColorType::L8 => Ok(1),
         ColorType::Rgb8 => Ok(3),
+        ColorType::Rgba8 => Ok(4),
         _ => Err(unsupported()),
     }
 }

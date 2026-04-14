@@ -42,6 +42,7 @@ defmodule Dither.NIF do
   def to_raw(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def resize(_resource, _new_width, _new_height), do: :erlang.nif_error(:nif_not_loaded)
   def grayscale(_resource), do: :erlang.nif_error(:nif_not_loaded)
+  def to_rgb(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def flip(_resource, _direction), do: :erlang.nif_error(:nif_not_loaded)
   def dither(_resource, _mode, _algorithm, _bit_depth), do: :erlang.nif_error(:nif_not_loaded)
   def dimensions(_resource), do: :erlang.nif_error(:nif_not_loaded)

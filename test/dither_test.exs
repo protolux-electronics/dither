@@ -104,6 +104,28 @@ defmodule DitherTest do
     assert image.channels == 3
   end
 
+  test "from_raw with RGBA data" do
+    # 2x2 RGBA image (4 channels): 2 * 2 * 4 = 16 bytes
+    data = :crypto.strong_rand_bytes(16)
+    width = 2
+    height = 2
+    assert {:ok, %Dither{} = image} = Dither.from_raw(data, width, height)
+    assert image.size == {width, height}
+    assert image.channels == 4
+
+    # Dither should fail for RGBA
+    assert {:error, :unsupported_channel_count} = Dither.dither(image)
+
+    # Convert to RGB should work
+    assert {:ok, %Dither{} = rgb} = Dither.to_rgb(image)
+    assert rgb.channels == 3
+    assert rgb.size == {width, height}
+
+    # Now dither should work
+    assert {:ok, %Dither{} = dithered} = Dither.dither(rgb)
+    assert dithered.channels == 1
+  end
+
   test "grayscale/1 converts RGB to grayscale" do
     # 2x2 RGB image: 12 bytes
     data = :crypto.strong_rand_bytes(12)

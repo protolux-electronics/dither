@@ -43,7 +43,7 @@ Add `dither` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:dither, "~> 0.2.1"}
+    {:dither, "~> 0.2.3"}
   ]
 end
 ```

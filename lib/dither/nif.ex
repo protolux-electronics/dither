@@ -45,6 +45,7 @@ defmodule Dither.NIF do
   def to_rgb(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def rotate(_resource, _degrees), do: :erlang.nif_error(:nif_not_loaded)
   def flip(_resource, _direction), do: :erlang.nif_error(:nif_not_loaded)
+  def contrast(_resource, _factor), do: :erlang.nif_error(:nif_not_loaded)
   def dither(_resource, _mode, _algorithm, _bit_depth), do: :erlang.nif_error(:nif_not_loaded)
   def dimensions(_resource), do: :erlang.nif_error(:nif_not_loaded)
   def channels(_resource), do: :erlang.nif_error(:nif_not_loaded)

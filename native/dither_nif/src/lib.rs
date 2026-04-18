@@ -207,6 +207,16 @@ fn channels(img: ImageArc) -> Result<u32, Atom> {
 }
 
 #[rustler::nif]
+fn contrast(img: ImageArc, factor: f32) -> Result<ImageArc, Atom> {
+    let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
+    let img_adjusted = img_lock.adjust_contrast(factor);
+
+    Ok(ImageArc::new(ImageResource {
+        inner: Mutex::new(img_adjusted),
+    }))
+}
+
+#[rustler::nif]
 fn dither(
     img: ImageArc,
     dither_type: DitherType,

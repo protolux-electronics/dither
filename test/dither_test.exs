@@ -79,6 +79,14 @@ defmodule DitherTest do
     assert %Dither{} = Dither.grayscale!(image)
   end
 
+  test "contrast and contrast!", %{image: image} do
+    assert {:ok, %Dither{} = adjusted} = Dither.contrast(image, 2.0)
+    assert adjusted.size == image.size
+
+    assert %Dither{} = Dither.contrast!(image, -1.5)
+    assert %Dither{} = Dither.contrast!(image, 0)
+  end
+
   test "flip and flip!", %{image: image} do
     assert {:ok, %Dither{} = flipped} = Dither.flip(image, :horizontal)
     assert flipped.size == image.size

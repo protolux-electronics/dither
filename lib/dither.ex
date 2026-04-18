@@ -262,6 +262,31 @@ defmodule Dither do
   end
 
   @doc """
+  Adjusts the contrast of the image.
+
+  `factor` is the amount to adjust the contrast by. Negative values decrease
+  the contrast and positive values increase the contrast.
+  """
+  @spec contrast(t(), float()) :: {:ok, t()} | {:error, atom()}
+  def contrast(%__MODULE__{ref: ref}, factor) when is_number(factor) do
+    case NIF.contrast(ref, factor * 1.0) do
+      {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Adjusts the contrast of the image, raises on error.
+  """
+  @spec contrast!(t(), float()) :: t()
+  def contrast!(image, factor) when is_number(factor) do
+    case contrast(image, factor) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "contrast error: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
   Rotates the image clockwise by the specified degrees (90, 180, or 270).
   """
   @spec rotate(t(), rotation_degrees()) :: {:ok, t()} | {:error, atom()}

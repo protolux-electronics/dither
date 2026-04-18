@@ -97,6 +97,21 @@ defmodule DitherTest do
     assert %Dither{} = Dither.contrast!(image, 0)
   end
 
+  test "crop and crop!", %{image: image} do
+    assert {:ok, %Dither{} = cropped} = Dither.crop(image, 0, 0, 1, 1)
+    assert cropped.size == {1, 1}
+
+    assert %Dither{} = Dither.crop!(image, 1, 1, 1, 1)
+  end
+
+  test "center_crop and center_crop!", %{image: image} do
+    assert {:ok, %Dither{} = cropped} = Dither.center_crop(image, 1, 1)
+    assert cropped.size == {1, 1}
+
+    assert %Dither{} = Dither.center_crop!(image, 2, 2)
+    assert {:error, :invalid_crop_area} = Dither.center_crop(image, 3, 3)
+  end
+
   test "flip and flip!", %{image: image} do
     assert {:ok, %Dither{} = flipped} = Dither.flip(image, :horizontal)
     assert flipped.size == image.size

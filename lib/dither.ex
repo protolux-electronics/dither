@@ -303,6 +303,62 @@ defmodule Dither do
   end
 
   @doc """
+  Crops the image to the specified coordinates and dimensions.
+  """
+  @spec crop(t(), non_neg_integer(), non_neg_integer(), pos_integer(), pos_integer()) ::
+          {:ok, t()} | {:error, atom()}
+  def crop(%__MODULE__{ref: ref}, x, y, width, height)
+      when is_integer(x) and is_integer(y) and is_integer(width) and is_integer(height) do
+    case NIF.crop(ref, x, y, width, height) do
+      {:ok, new_ref} -> {:ok, from_ref(new_ref)}
+      {:error, reason} -> {:error, reason}
+    end
+  end
+
+  @doc """
+  Crops the image to the specified coordinates and dimensions, raises on error.
+  """
+  @spec crop!(t(), non_neg_integer(), non_neg_integer(), pos_integer(), pos_integer()) :: t()
+  def crop!(image, x, y, width, height)
+      when is_integer(x) and is_integer(y) and is_integer(width) and is_integer(height) do
+    case crop(image, x, y, width, height) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "crop error: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
+  Crops the image to the specified dimensions, centered.
+
+  Returns `{:error, :invalid_crop_area}` if the requested dimensions are larger
+  than the current image dimensions.
+  """
+  @spec center_crop(t(), pos_integer(), pos_integer()) :: {:ok, t()} | {:error, atom()}
+  def center_crop(%__MODULE__{size: {img_w, img_h}} = image, width, height)
+      when is_integer(width) and is_integer(height) do
+    cond do
+      width > img_w or height > img_h ->
+        {:error, :invalid_crop_area}
+
+      true ->
+        x = div(img_w - width, 2)
+        y = div(img_h - height, 2)
+        crop(image, x, y, width, height)
+    end
+  end
+
+  @doc """
+  Crops the image to the specified dimensions, centered, raises on error.
+  """
+  @spec center_crop!(t(), pos_integer(), pos_integer()) :: t()
+  def center_crop!(image, width, height) do
+    case center_crop(image, width, height) do
+      {:ok, image} -> image
+      {:error, reason} -> raise "center crop error: #{inspect(reason)}"
+    end
+  end
+
+  @doc """
   Rotates the image clockwise by the specified degrees (90, 180, or 270).
   """
   @spec rotate(t(), rotation_degrees()) :: {:ok, t()} | {:error, atom()}

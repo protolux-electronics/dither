@@ -1,28 +1,24 @@
 defmodule DitherTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   alias Dither
 
-  setup do
-    # 2x2 grayscale image: [0, 255, 128, 64]
-    data = <<0, 255, 128, 64>>
-    width = 2
-    height = 2
-    {:ok, image} = Dither.from_raw(data, width, height)
-    tmp_path = Path.join(System.tmp_dir!(), "dither_test_image.png")
+  setup_all do
+    # Load the real test image and resize it to 800x600 once for all tests
+    image = Dither.load!("test/test_image.jpg") |> Dither.resize!(800, 600)
+    {width, height} = image.size
+    %{image: image, width: width, height: height}
+  end
+
+  setup context do
+    # Create a unique temporary path for each test to allow async execution
+    test_name = Atom.to_string(context.test) |> String.replace(" ", "_")
+    tmp_path = Path.join(System.tmp_dir!(), "#{test_name}_image.png")
 
     on_exit(fn ->
       if File.exists?(tmp_path), do: File.rm(tmp_path)
     end)
 
-    %{image: image, data: data, width: width, height: height, tmp_path: tmp_path}
-  end
-
-  test "from_raw and from_raw!", %{data: data, width: width, height: height} do
-    assert {:ok, %Dither{} = image} = Dither.from_raw(data, width, height)
-    assert image.size == {width, height}
-    assert image.channels == 1
-
-    assert %Dither{} = Dither.from_raw!(data, width, height)
+    %{tmp_path: tmp_path}
   end
 
   test "dimensions", %{image: image, width: width, height: height} do
@@ -67,22 +63,22 @@ defmodule DitherTest do
     assert %Dither{} = Dither.load!(path)
   end
 
-  test "to_raw and to_raw!", %{image: image, data: data} do
+  test "to_raw and to_raw!", %{image: image} do
     assert {:ok, raw} = Dither.to_raw(image)
-    assert raw == data
+    {w, h} = image.size
+    assert byte_size(raw) == w * h * image.channels
 
-    assert Dither.to_raw!(image) == data
+    assert Dither.to_raw!(image) == raw
   end
 
   test "resize and resize!", %{image: image} do
-    assert {:ok, %Dither{} = resized} = Dither.resize(image, 4, 4)
-    assert resized.size == {4, 4}
+    assert {:ok, %Dither{} = resized} = Dither.resize(image, 400, 300)
+    assert resized.size == {400, 300}
 
-    assert %Dither{} = Dither.resize!(image, 8, 8)
+    assert %Dither{} = Dither.resize!(image, 800, 600)
   end
 
   test "grayscale and grayscale!", %{image: image} do
-    # Already grayscale, but should work
     assert {:ok, %Dither{} = gray} = Dither.grayscale(image)
     assert gray.channels == 1
 
@@ -98,18 +94,18 @@ defmodule DitherTest do
   end
 
   test "crop and crop!", %{image: image} do
-    assert {:ok, %Dither{} = cropped} = Dither.crop(image, 0, 0, 1, 1)
-    assert cropped.size == {1, 1}
+    assert {:ok, %Dither{} = cropped} = Dither.crop(image, 0, 0, 100, 100)
+    assert cropped.size == {100, 100}
 
-    assert %Dither{} = Dither.crop!(image, 1, 1, 1, 1)
+    assert %Dither{} = Dither.crop!(image, 10, 10, 50, 50)
   end
 
   test "center_crop and center_crop!", %{image: image} do
-    assert {:ok, %Dither{} = cropped} = Dither.center_crop(image, 1, 1)
-    assert cropped.size == {1, 1}
+    assert {:ok, %Dither{} = cropped} = Dither.center_crop(image, 100, 100)
+    assert cropped.size == {100, 100}
 
-    assert %Dither{} = Dither.center_crop!(image, 2, 2)
-    assert {:error, :invalid_crop_area} = Dither.center_crop(image, 3, 3)
+    assert %Dither{} = Dither.center_crop!(image, 200, 200)
+    assert {:error, :invalid_crop_area} = Dither.center_crop(image, 1000, 1000)
   end
 
   test "flip and flip!", %{image: image} do
@@ -137,10 +133,12 @@ defmodule DitherTest do
   end
 
   test "dither and dither!", %{image: image} do
-    assert {:ok, %Dither{} = dithered} = Dither.dither(image)
-    assert dithered.size == image.size
+    # Image must be grayscale for bit_depth dithering
+    gray = Dither.grayscale!(image)
+    assert {:ok, %Dither{} = dithered} = Dither.dither(gray)
+    assert dithered.size == gray.size
 
-    assert %Dither{} = Dither.dither!(image, algorithm: :atkinson)
+    assert %Dither{} = Dither.dither!(gray, algorithm: :atkinson)
   end
 
   test "from_raw and from_raw! with RGB data" do
@@ -189,6 +187,8 @@ defmodule DitherTest do
   end
 
   test "dither/2 supports all algorithms", %{image: image} do
+    gray = Dither.grayscale!(image)
+
     algorithms = [
       :floyd_steinberg,
       :atkinson,
@@ -199,39 +199,18 @@ defmodule DitherTest do
     ]
 
     for algo <- algorithms do
-      assert {:ok, %Dither{} = dithered} = Dither.dither(image, algorithm: algo)
-      assert dithered.size == image.size
+      assert {:ok, %Dither{} = dithered} = Dither.dither(gray, algorithm: algo)
+      assert dithered.size == gray.size
       assert dithered.channels == 1
     end
   end
 
-  test "dither/2 with custom palette (color dithering)" do
-    # 2x2 RGB image: 12 bytes
-    data = <<
-      255,
-      0,
-      0,
-      0,
-      255,
-      0,
-      0,
-      0,
-      255,
-      255,
-      255,
-      255
-    >>
-
-    width = 2
-    height = 2
-    {:ok, rgb_image} = Dither.from_raw(data, width, height)
-    assert rgb_image.channels == 3
-
+  test "dither/2 with custom palette (color dithering)", %{image: image} do
     # Dither to just Red and Black
     palette = ["#FF0000", "#000000"]
 
-    assert {:ok, %Dither{} = dithered} = Dither.dither(rgb_image, palette: palette)
-    assert dithered.size == {width, height}
+    assert {:ok, %Dither{} = dithered} = Dither.dither(image, palette: palette)
+    assert dithered.size == image.size
     assert dithered.channels == 3
 
     # Check some raw bytes to see if it's restricted to our palette
@@ -241,6 +220,25 @@ defmodule DitherTest do
     for <<r, g, b <- raw>> do
       assert {r, g, b} in [{255, 0, 0}, {0, 0, 0}]
     end
+  end
+
+  test "dither bit_depth correctly limits unique colors", %{image: image} do
+    gray = Dither.grayscale!(image)
+
+    # bit_depth: 1 => 2^1 = 2 colors
+    d1 = Dither.dither!(gray, bit_depth: 1)
+    colors1 = Dither.to_raw!(d1) |> :binary.bin_to_list() |> Enum.uniq()
+    assert length(colors1) == 2
+
+    # bit_depth: 2 => 2^2 = 4 colors
+    d2 = Dither.dither!(gray, bit_depth: 2)
+    colors2 = Dither.to_raw!(d2) |> :binary.bin_to_list() |> Enum.uniq()
+    assert length(colors2) == 4
+
+    # bit_depth: 3 => 2^3 = 8 colors
+    d3 = Dither.dither!(gray, bit_depth: 3)
+    colors3 = Dither.to_raw!(d3) |> :binary.bin_to_list() |> Enum.uniq()
+    assert length(colors3) == 8
   end
 
   test "load error when file not found" do

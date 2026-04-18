@@ -63,7 +63,8 @@ pub fn dither_grayscale(
         DitherAlgorithm::Sierra => sierra3_ditherer(),
     };
 
-    let quantize = create_quantize_n_bits_func(depth).unwrap();
+    let levels = (2u32.pow(depth as u32) - 1) as u8;
+    let quantize = create_quantize_n_bits_func(levels).unwrap();
 
     let img = Img::<u8>::new(image.to_luma8().into_raw(), image.width())
         .unwrap()

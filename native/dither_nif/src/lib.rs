@@ -10,8 +10,8 @@ use image::{
 };
 use rustler::{Atom, Binary, Env, NewBinary, Term};
 use types::{
-    invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageResource,
-    RotateDegrees,
+    invalid_buffer, DitherAlgorithm, DitherType, FlipDirection, ImageArc, ImageFormatWrapper,
+    ImageResource, RotateDegrees,
 };
 
 mod dither;
@@ -80,13 +80,13 @@ fn decode(encoded: Binary) -> Result<ImageArc, Atom> {
 }
 
 #[rustler::nif]
-fn encode<'a>(env: Env<'a>, img: ImageArc) -> Result<Term<'a>, Atom> {
+fn encode<'a>(env: Env<'a>, img: ImageArc, format: ImageFormatWrapper) -> Result<Term<'a>, Atom> {
     let img_lock = img.inner.lock().map_err(handle_mutex_error)?;
     let mut bytes: Vec<u8> = Vec::new();
 
     img_lock
         .clone()
-        .write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)
+        .write_to(&mut Cursor::new(&mut bytes), format.0)
         .map_err(handle_image_error)?;
 
     let mut binary = NewBinary::new(env, bytes.len());

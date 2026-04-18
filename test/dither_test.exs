@@ -37,6 +37,16 @@ defmodule DitherTest do
 
     assert <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, _rest::binary>> =
              Dither.encode!(image)
+
+    # Test other formats
+    assert {:ok, jpeg} = Dither.encode(image, :jpeg)
+    assert <<0xFF, 0xD8, 0xFF, _rest::binary>> = jpeg
+
+    assert {:ok, bmp} = Dither.encode(image, :bmp)
+    assert <<0x42, 0x4D, _rest::binary>> = bmp
+
+    assert {:ok, webp} = Dither.encode(image, :webp)
+    assert <<0x52, 0x49, 0x46, 0x46, _size::32, 0x57, 0x45, 0x42, 0x50, _rest::binary>> = webp
   end
 
   test "decode and decode!", %{image: image} do

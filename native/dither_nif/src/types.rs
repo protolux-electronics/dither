@@ -19,6 +19,23 @@ rustler::atoms! {
     vertical,
     both,
 
+    // image formats
+    avif,
+    bmp,
+    exr,
+    ff,
+    farbfeld,
+    gif,
+    hdr,
+    ico,
+    jpeg,
+    png,
+    pnm,
+    qoi,
+    tga,
+    tiff,
+    webp,
+
     // errors
     invalid_buffer
 }
@@ -31,6 +48,32 @@ pub struct ImageResource {
 impl Resource for ImageResource {}
 
 pub type ImageArc = ResourceArc<ImageResource>;
+
+pub struct ImageFormatWrapper(pub image::ImageFormat);
+
+impl<'a> rustler::Decoder<'a> for ImageFormatWrapper {
+    fn decode(term: rustler::Term<'a>) -> rustler::NifResult<Self> {
+        let atom: rustler::Atom = term.decode()?;
+        let format = match atom {
+            x if x == avif() => image::ImageFormat::Avif,
+            x if x == bmp() => image::ImageFormat::Bmp,
+            x if x == exr() => image::ImageFormat::OpenExr,
+            x if x == ff() || x == farbfeld() => image::ImageFormat::Farbfeld,
+            x if x == gif() => image::ImageFormat::Gif,
+            x if x == hdr() => image::ImageFormat::Hdr,
+            x if x == ico() => image::ImageFormat::Ico,
+            x if x == jpeg() => image::ImageFormat::Jpeg,
+            x if x == png() => image::ImageFormat::Png,
+            x if x == pnm() => image::ImageFormat::Pnm,
+            x if x == qoi() => image::ImageFormat::Qoi,
+            x if x == tga() => image::ImageFormat::Tga,
+            x if x == tiff() => image::ImageFormat::Tiff,
+            x if x == webp() => image::ImageFormat::WebP,
+            _ => return Err(rustler::Error::BadArg),
+        };
+        Ok(ImageFormatWrapper(format))
+    }
+}
 
 #[derive(Debug)]
 pub enum DitherAlgorithm {

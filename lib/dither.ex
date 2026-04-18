@@ -19,6 +19,22 @@ defmodule Dither do
         ]
   @type flip_direction :: :horizontal | :vertical | :both
   @type rotation_degrees :: 90 | 180 | 270
+  @type image_format ::
+          :avif
+          | :bmp
+          | :exr
+          | :ff
+          | :farbfeld
+          | :gif
+          | :hdr
+          | :ico
+          | :jpeg
+          | :png
+          | :pnm
+          | :qoi
+          | :tga
+          | :tiff
+          | :webp
 
   alias Dither.NIF
   alias Dither.Palette
@@ -99,19 +115,19 @@ defmodule Dither do
   end
 
   @doc """
-  Encodes the image into a PNG binary.
+  Encodes the image into a binary of the specified format. Default is `:png`.
   """
-  @spec encode(t()) :: {:ok, binary()} | {:error, atom()}
-  def encode(%__MODULE__{ref: ref}) do
-    NIF.encode(ref)
+  @spec encode(t(), image_format()) :: {:ok, binary()} | {:error, atom()}
+  def encode(%__MODULE__{ref: ref}, format \\ :png) do
+    NIF.encode(ref, format)
   end
 
   @doc """
-  Encodes the image into a PNG binary, raises on error.
+  Encodes the image into a binary of the specified format, raises on error.
   """
-  @spec encode!(t()) :: binary()
-  def encode!(image) do
-    case encode(image) do
+  @spec encode!(t(), image_format()) :: binary()
+  def encode!(image, format \\ :png) do
+    case encode(image, format) do
       {:ok, bytes} ->
         bytes
 

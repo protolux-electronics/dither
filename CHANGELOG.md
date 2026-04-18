@@ -6,7 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2026-04-18
+
+Adds support for encoding images to multiple formats and a new crop function.
+
+### Added
+
+- `Dither.encode/2` and `Dither.encode!/2` now support specifying the output
+  format (AVIF, BMP, EXR, FF, GIF, HDR, ICO, JPEG, PNG, PNM, QOI, TGA, TIFF, and
+  WebP).
+- `Dither.crop/5` and `Dither.crop!/5` to crop images to specified coordinates and dimensions.
+- `Dither.center_crop/3` and `Dither.center_crop!/3` to perform a centered crop.
+
+### Fixed
+
+- Corrected the bit depth calculation in the quantization function.
+
 ## [0.2.3] - 2026-04-18
+
 
 Adds contrast adjustment functionality and automatic EXIF orientation.
 
@@ -67,7 +84,8 @@ iex> Dither.from_raw(<<1>>, 1, 1)
 {:ok, #Reference<0.253499029.2847801345.146246>}
 ```
 
-[unreleased]: https://github.com/protolux-electronics/dither/compare/v0.2.3...HEAD
+[unreleased]: https://github.com/protolux-electronics/dither/compare/v0.2.4...HEAD
+[0.2.4]: https://github.com/protolux-electronics/dither/compare/v0.2.3...v0.2.4
 [0.2.3]: https://github.com/protolux-electronics/dither/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/protolux-electronics/dither/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/protolux-electronics/dither/compare/v0.2.0...v0.2.1
